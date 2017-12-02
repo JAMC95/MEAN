@@ -38,14 +38,12 @@ function saveUser(req, res) {
 
             if(users && users.length >= 1) {
                 return res.status(200).send({message: 'El usuario que intenta registrar ya existe'})
-            } 
-        });
+            } else {
+                 // Cifra y guarda los datos
+                bcrypt.hash(params.password, null, null, (err, hash) => {
+                user.password = hash;
 
-        // Cifra y guarda los datos
-        bcrypt.hash(params.password, null, null, (err, hash) => {
-            user.password = hash;
-
-            user.save((err, userStore) => {
+                 user.save((err, userStore) => {
 
                 if(err) return res.status(500).send({message: 'Error al guardar el usuario'})
 
@@ -55,7 +53,9 @@ function saveUser(req, res) {
                     res.status(404).send({message: 'No se ha registrado el usuario'})
                 }
 
-            });
+    });
+});
+            }
         });
         
     } else {
