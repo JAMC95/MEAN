@@ -33,6 +33,7 @@ function deleteFollow(req,res) {
     });
 }
 
+// Devuelve usuarios que sigo
 function getFollowingUsers(req, res) {
     var userId = req.user.sub;
 
@@ -51,7 +52,7 @@ function getFollowingUsers(req, res) {
     var itemsPerPage = 4;
 
     Follow.find({user:userId}).populate({path: 'followed'}).paginate(page, itemsPerPage, (err, follows, total) => {
-        if(err) return res.status(500).send({message: "Error al dejar de seguir usuario"});        
+        if(err) return res.status(500).send({message: "Error al listar usuarios"});        
         
         if(!follows) return res.status(404).send({message: 'No estas siguiendo a ningún usuario'});
 
@@ -63,6 +64,7 @@ function getFollowingUsers(req, res) {
     });
 }
 
+// Devuelve usuarios que me siguen
 function getFollowedUsers(req, res) {
     var userId = req.user.sub;
     
@@ -81,7 +83,7 @@ function getFollowedUsers(req, res) {
         var itemsPerPage = 4;
     
         Follow.find({followed:userId}).populate({path: 'user followed'}).paginate(page, itemsPerPage, (err, follows, total) => {
-            if(err) return res.status(500).send({message: "Error al dejar de seguir usuario"});        
+            if(err) return res.status(500).send({message: "Error al listar usuarios"});        
             
             if(!follows) return res.status(404).send({message: 'No te sigue ningún usuario'});
     
@@ -93,9 +95,31 @@ function getFollowedUsers(req, res) {
         });
 }
 
+// Devuelve usuarios que sigo o que me siguen sin paginar
+function getMyFollows(req, res) {
+    var userId = req.user.sub;
+
+    var find = Follow.find({user: userId});
+
+    if(req.params.followed) {
+        find = Follow.find({followed: userId});
+    }
+
+    find.populate('user followed').exec((err, follows) => {
+        if(err) return res.status(500).send({message: "Error al listar usarios"});   
+
+        if(!follows) return res.status(404).send({message: 'No se encontró ningún usuario'});
+
+        return res.status(200).send({follows});
+
+    });
+}
+
+
 module.exports = {
     saveFollow,
     deleteFollow,
     getFollowingUsers, 
-    getFollowedUsers
+    getFollowedUsers,
+    getMyFollows
 }
