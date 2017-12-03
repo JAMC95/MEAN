@@ -168,7 +168,7 @@ function uploadImage(req,res) {
     var userId = req.params.id;
 
     if(userId != req.user.sub) {
-        removeFileOfUploads(res, filePath, 'No tienes permisos para modificar los datos del usuario identificado');        
+       return removeFileOfUploads(res, filePath, 'No tienes permisos para modificar los datos del usuario identificado');        
     }
 
     if(req.files) {
@@ -194,7 +194,7 @@ function uploadImage(req,res) {
                 return res.status(200).send({user: userUpdated});
             });
         } else {
-            removeFileOfUploads(res, filePath, 'Extensión no válida');
+           return removeFileOfUploads(res, filePath, 'Extensión no válida');
         }
 
     } else {
