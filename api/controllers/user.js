@@ -164,7 +164,7 @@ function updateUser(req,res) {
 
 // Subir archivos de imagen/avatar de usuario
 
-function uploadImage(req,res) {
+function uploadImage(req, res) {
     var userId = req.params.id;
 
     if(userId != req.user.sub) {
@@ -209,6 +209,19 @@ function removeFileOfUploads(res, filePath, Message) {
     });
 }
 
+function getImageFile(req, res) {
+    var imageFile = req.params.imageFile;
+
+    var pathFile = './uploads/users/'+imageFile;
+    fs.exists(pathFile, (exists) => {
+        if(exists) {
+            res.sendFile(path.resolve(pathFile));
+        } else {
+            res.status(200).send({message: 'No existe la imagen'});
+        }
+    })
+}
+
 module.exports = {
     home,
     pruebas,
@@ -217,5 +230,6 @@ module.exports = {
     getUser,
     getUsers,
     updateUser,
-    uploadImage
+    uploadImage,
+    getImageFile
 }
