@@ -3,6 +3,8 @@
 var bcrypt = require('bcrypt-nodejs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
+var fs = require('fs');
+var path = require('path');
 
 var User = require('../models/user');
 
@@ -160,6 +162,46 @@ function updateUser(req,res) {
     });    
 }
 
+// Subir archivos de imagen/avatar de usuario
+
+function uploadImage(req,res) {
+    var userId = req.params.id;
+
+    if(userId != req.user.sub) {
+        removeFileOfUploads(res, filePath, 'No tienes permisos para modificar los datos del usuario identificado');        
+    }
+
+    if(req.files) {
+        var filePath = req.files.image.path;
+
+        var fileSplit = filePath.split('\\');
+        // Si se usa en linux la ruta estaría especificada por / y no por \
+        if(fileSplit.length == 1) fileSplit =  filePath.split('/');
+
+        var fileName = fileSplit[2];
+
+        var extSplit = fileName.split('\.');
+        
+        var fileExt = extSplit[1];
+
+        if(fileExt == 'png' || fileExt == 'jpg' || fileExt == 'jpeg' || fileExt == 'gif') {
+            // Actualizar documento de usuario logeado
+        } else {
+            removeFileOfUploads(res, filePath, 'Extensión no válida');
+        }
+
+    } else {
+        return res.status(200).send({message: 'No se han subido archvios de imagen'});
+    }
+
+}
+
+function removeFileOfUploads(res, filePath, Message) {
+    fs.unlink(filePath, (err) => {
+        if(err) return res.status(200).send({message : Message})
+    });
+}
+
 module.exports = {
     home,
     pruebas,
@@ -167,5 +209,6 @@ module.exports = {
     loginUser,
     getUser,
     getUsers,
-    updateUser
+    updateUser,
+    uploadImage
 }
