@@ -186,6 +186,13 @@ function uploadImage(req,res) {
 
         if(fileExt == 'png' || fileExt == 'jpg' || fileExt == 'jpeg' || fileExt == 'gif') {
             // Actualizar documento de usuario logeado
+            User.findByIdAndUpdate(userId, {image: fileName}, {new: true}, (err, userUpdated) => {
+                if(err) return res.status(500).send({message : 'Error en la petición'});
+                
+                if(!userUpdated) return res.status(404).send({message : 'No se ha actualizado el usuario'});
+                
+                return res.status(200).send({user: userUpdated});
+            });
         } else {
             removeFileOfUploads(res, filePath, 'Extensión no válida');
         }
