@@ -80,7 +80,7 @@ function getFollowedUsers(req, res) {
     
         var itemsPerPage = 4;
     
-        Follow.find({followed:userId}).populate({path: 'followed'}).paginate(page, itemsPerPage, (err, follows, total) => {
+        Follow.find({followed:userId}).populate({path: 'user followed'}).paginate(page, itemsPerPage, (err, follows, total) => {
             if(err) return res.status(500).send({message: "Error al dejar de seguir usuario"});        
             
             if(!follows) return res.status(404).send({message: 'No te sigue ningún usuario'});
