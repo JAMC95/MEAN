@@ -114,11 +114,33 @@ function getUser(req, res) {
 
         if(!user) return res.status(404).send({message : 'El usuario no existe'});
         
-        Follow.findOne({"user": req.user.sub, "followed": userId}).exec((err, follow) => {
-            if(err) return res.status(500).send({message : 'Error al comprobar el seguimiento'});
-            return res.status(200).send({user, follow});
-        });
+       followThisUser(req.user.sub, userId).then((value)=> {
+            return res.status(200).send({user, 
+                following: value.following,
+                followed: value.followed
+            });
+       });
+
+           
+    
     });
+}
+
+async function followThisUser(identityUserId, userId) {
+    var following = await Follow.findOne({"user": identityUserId, "followed": userId}).exec((err, follow) => {
+        if(err) return res.status(500).send({message : 'Error al comprobar el seguimiento'});
+        return follow;
+    });
+
+    var followed = await Follow.findOne({"user": userId, "followed": identityUserId}).exec((err, follow) => {
+        if(err) return res.status(500).send({message : 'Error al comprobar el seguimiento'});
+        return follow;
+    });
+
+    return {
+        following: following,
+        followed: followed
+    }
 }
 
 // Devolver un listado de usuarios paginados 
