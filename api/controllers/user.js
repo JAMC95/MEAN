@@ -143,7 +143,7 @@ async function followThisUser(identityUserId, userId) {
     }
 }
 
-// Devolver un listado de usuarios paginados 
+// Devolver un listado de usuarios paginado 
 function getUsers(req, res) {
     var identityUserId = req.user.sub;
    
@@ -159,13 +159,47 @@ function getUsers(req, res) {
         
         if(!users) return res.status(404).send({message : 'No hay usuarios a listar'});
         
-        return res.status(200).send({
-            users,
-            total,
-            pages: Math.ceil(total/itemsPerPage)
+        followUserIds(identityUserId).then((value) => {
+            return res.status(200).send({
+                users,
+                users_following: value.following,
+                user_follow_me: value.followed,
+                total,
+                pages: Math.ceil(total/itemsPerPage)
+            });
+
         });
+
     });
 }
+
+async function followUserIds(userId) {
+    var following = await Follow.find({"user":userId}).select({'_id':0, '__v':0, 'user':0}).exec((err, follows) => {
+       return follows;
+    });
+
+    var followed = await Follow.find({"followed":userId}).select({'_id':0, '__v':0, 'followed':0}).exec((err, follows) => {
+        return follows;
+    });
+
+    // procesar following ids
+    var followingClean = [];
+            following.forEach((follow) => {
+                followingClean.push(follow.followed);
+            });
+          
+    // procesar followed ids    
+    var followedClean = [];
+            followed.forEach((follow) => {
+                followedClean.push(follow.user);
+            });
+
+    return {
+        following: followingClean,
+        followed: followedClean
+    }
+}
+
 // Edición de datos de usuario
 function updateUser(req,res) {
     var userId = req.params.id;
