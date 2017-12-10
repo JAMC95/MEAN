@@ -6,6 +6,7 @@ var Schema = mongoose.Schema;
 var Mesagechema = Schema({
   text: String,
   created_at: String,
+  viewed: String,
   emitter: {type: Schema.ObjectId, ref: 'User'},
   reciver: {type: Schema.ObjectId, ref: 'User'}
 });
