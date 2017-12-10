@@ -8,6 +8,7 @@ var path = require('path');
 
 var User = require('../models/user');
 var Follow = require('../models/follow');
+var Publication = require('../models/publication');
 
 function home(req, res) {
     res.status(200).send({
@@ -223,9 +224,15 @@ async function getCountFollow(userId) {
         return count;
     });
 
+    var publications = await Publication.count({"user": user_id}).exec((err, count) => {
+        if(err) return handleError(err);
+        return count;
+    });
+
     return {
         following: following,
-        followed: followed
+        followed: followed,
+        publications: publications
     }
 }
 
