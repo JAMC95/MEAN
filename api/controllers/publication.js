@@ -81,10 +81,24 @@ function getPublication(req, res) {
     });
 }
 
+function deletePublication(req, res) {
+    var publicationId = req.params.id;
+
+    Publication.findByIdAndRemove(publicationId, (err, publicationRemoved) => {
+        if(err) return res.status(500).send({message: 'Error al borrar la publicación'});
+        
+        if(!publicationRemoved) return res.status(404).send({message: 'No existe esta publicación'});
+
+        return res.status(200).send({publication: publicationRemoved});
+        
+    });
+}
+
 module.exports = {
     probando,
     savePublication,
     getPublications,
-    getPublication
+    getPublication,
+    deletePublication
 }
 
