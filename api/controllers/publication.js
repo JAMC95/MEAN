@@ -92,11 +92,70 @@ function deletePublication(req, res) {
     });
 }
 
+// Subir archivos de imagen/publicación de usuario
+
+function uploadImage(req, res) {
+    var publicationId = req.params.id;
+
+    if(req.files) {
+        var filePath = req.files.image.path;
+
+        var fileSplit = filePath.split('\\');
+        // Si se usa en linux la ruta estaría especificada por / y no por \
+        if(fileSplit.length == 1) fileSplit =  filePath.split('/');
+
+        var fileName = fileSplit[2];
+
+        var extSplit = fileName.split('\.');
+        
+        var fileExt = extSplit[1];
+
+        if(fileExt == 'png' || fileExt == 'jpg' || fileExt == 'jpeg' || fileExt == 'gif') {
+            // Actualizar documento de la publicación
+            Publication.findByIdAndUpdate(publicationId, {file: fileName}, {new: true}, (err, publicationUpdated) => {
+                if(err) return res.status(500).send({message : 'Error en la petición'});
+                
+                if(!publicationUpdated) return res.status(404).send({message : 'No se ha actualizado el usuario'});
+console.log("entra")
+                return res.status(200).send({publication: publicationUpdated});
+            });
+        } else {
+           return removeFileOfUploads(res, filePath, 'Extensión no válida');
+        }
+
+    } else {
+        return res.status(200).send({message: 'No se han subido archvios de imagen'});
+    }
+
+}
+
+function removeFileOfUploads(res, filePath, Message) {
+    fs.unlink(filePath, (err) => {
+        if(err) return res.status(200).send({message : Message})
+    });
+}
+
+function getImageFile(req, res) {
+    var imageFile = req.params.imageFile;
+
+    var pathFile = './uploads/publications/'+imageFile;
+    fs.exists(pathFile, (exists) => {
+        if(exists) {
+            res.sendFile(path.resolve(pathFile));
+        } else {
+            res.status(200).send({message: 'No existe la imagen'});
+        }
+    })
+}
+
+
 module.exports = {
     probando,
     savePublication,
     getPublications,
     getPublication,
-    deletePublication
+    deletePublication,
+    uploadImage,
+    getImageFile
 }
 
