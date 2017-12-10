@@ -56,7 +56,7 @@ function getPublications(req, res) {
         Publication.find({user: {"$in": follows_clean}}).sort('created_ad').populate('user').paginate(page, itemsPerPage, (err, publications, total) => {
             if(err) return res.status(500).send({message: 'Error al devolver publicaciones'});
 
-            if(!publications) return res.status(404).send({message: 'No hya publicaciones'});
+            if(!publications) return res.status(404).send({message: 'No hay publicaciones'});
 
             return res.status(200).send({
                 totalItems: total,
@@ -68,9 +68,23 @@ function getPublications(req, res) {
     });
 }
 
+function getPublication(req, res) {
+    var publicationId = req.params.id;
+
+    Publication.findById(publicationId, (err, publication) => {
+        if(err) return res.status(500).send({message: 'Error al devolver publicación'});
+        
+        if(!publication) return res.status(404).send({message: 'No existe esa publicación'});
+
+        return res.status(200).send({publication});
+        
+    });
+}
+
 module.exports = {
     probando,
     savePublication,
-    getPublications
+    getPublications,
+    getPublication
 }
 
