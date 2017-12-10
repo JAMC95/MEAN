@@ -1,3 +1,4 @@
 api/node_modules
 api/npm-debug.log
 api/uploads/users
+api/uploads/publications

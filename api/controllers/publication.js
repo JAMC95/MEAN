@@ -116,7 +116,7 @@ function uploadImage(req, res) {
                 if(err) return res.status(500).send({message : 'Error en la petición'});
                 
                 if(!publicationUpdated) return res.status(404).send({message : 'No se ha actualizado el usuario'});
-console.log("entra")
+
                 return res.status(200).send({publication: publicationUpdated});
             });
         } else {
