@@ -3,7 +3,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var Mesagechema = Schema({
+var MessageSchema = Schema({
   text: String,
   created_at: String,
   viewed: String,

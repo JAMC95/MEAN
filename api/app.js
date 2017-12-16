@@ -9,6 +9,7 @@ var app = express();
 var user_routes = require('./routes/user');
 var follow_routes = require('./routes/follow');
 var publication_router = require('./routes/publication');
+var message_router = require('./routes/message');
 
 // middlewares
 app.use(bodyParser.urlencoded({extended:false}))
