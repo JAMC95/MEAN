@@ -39,7 +39,7 @@ function getRecivedMessages(req, res) {
 
     var itemsPerPage = 4;
 
-    Message.find({reciver: userId}).populate('emitter').paginate(page, itemsPerPage, (err, messages,total) => {
+    Message.find({reciver: userId}).populate('emitter','name surname nick image _id').paginate(page, itemsPerPage, (err, messages,total) => {
         if(err) if(!params.text || !params.reciver) return res.status(500).send({message: 'Error en la petición'});
         if(!messages) return res.status(404).send({message: 'No hya mensajes'});
 
