@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 app.use('/api', user_routes);
 app.use('/api', follow_routes);
 app.use('/api', publication_router);
+app.use('/api', message_router)
 
 // exportar
 module.exports = app;
