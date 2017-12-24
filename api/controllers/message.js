@@ -48,7 +48,7 @@ function getRecivedMessages(req, res) {
             total: total,
             pages: Math.ceil(total/itemsPerPage),
             messages
-        })
+        });
 
     });
 
@@ -72,7 +72,7 @@ function getEmmitedMessages(req, res) {
             total: total,
             pages: Math.ceil(total/itemsPerPage),
             messages
-        })
+        });
 
     });
 
@@ -80,18 +80,31 @@ function getEmmitedMessages(req, res) {
 
 function getUnviewedMessages(req, res) {
     var userId = req.user.sub;
-    console.log(req.user.sub)
+
     Message.count({reciver: userId, viewed: 'false'}).exec((err, count) => {
         if(err) return res.status(500).send({message: 'Error en la petición'});
         return res.status(200).send({
             'unviewed': count
-        })
+        });
     });
+}
+
+function setViewedMessages(req, res) {
+    var userId = req.user.sub;
+
+    Message.update({reciver: userId, viewed: 'false'}, {viewed: 'true'}, {"multi": true}, (err, messagesUpdate) => {
+        if(err) return res.status(500).send({message: 'Error en la petición'});
+        return res.status(200).send({
+            message: messagesUpdate
+        });
+    });
+
 }
 
 module.exports = {
     saveMessage,
     getRecivedMessages,
     getEmmitedMessages,
-    getUnviewedMessages
+    getUnviewedMessages,
+    setViewedMessages
 }
