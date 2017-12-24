@@ -18,6 +18,7 @@ function saveMessage(req, res) {
     message.reciver = params.reciver;
     message.text = params.text;
     message.created_at = moment().unix();
+    message.viewed = 'false';
 
     message.save((err, messageStored) => {
         if(err) if(!params.text || !params.reciver) return res.status(500).send({message: 'Error en la petición'});
@@ -64,8 +65,8 @@ function getEmmitedMessages(req, res) {
     var itemsPerPage = 4;
 
     Message.find({emitter: userId}).populate('emitter reciver','name surname nick image _id').paginate(page, itemsPerPage, (err, messages,total) => {
-        if(err) if(!params.text || !params.reciver) return res.status(500).send({message: 'Error en la petición'});
-        if(!messages) return res.status(404).send({message: 'No hya mensajes'});
+        if(err) return res.status(500).send({message: 'Error en la petición'});
+        if(!messages) return res.status(404).send({message: 'No hay mensajes'});
 
         return res.status(200).send({
             total: total,
@@ -77,8 +78,20 @@ function getEmmitedMessages(req, res) {
 
 }
 
+function getUnviewedMessages(req, res) {
+    var userId = req.user.sub;
+    console.log(req.user.sub)
+    Message.count({reciver: userId, viewed: 'false'}).exec((err, count) => {
+        if(err) return res.status(500).send({message: 'Error en la petición'});
+        return res.status(200).send({
+            'unviewed': count
+        })
+    });
+}
+
 module.exports = {
     saveMessage,
     getRecivedMessages,
-    getEmmitedMessages
+    getEmmitedMessages,
+    getUnviewedMessages
 }

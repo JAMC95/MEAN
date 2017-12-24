@@ -8,6 +8,7 @@ var md_auth = require('../middlewares/authenticated');
 api.post('/message', md_auth.ensureAuth, MessageController.saveMessage);
 api.get('/my-messages', md_auth.ensureAuth, MessageController.getRecivedMessages);
 api.get('/messages', md_auth.ensureAuth, MessageController.getEmmitedMessages);
+api.get('/unviewed-messages', md_auth.ensureAuth, MessageController.getUnviewedMessages);
 
 module.exports = api;
 
